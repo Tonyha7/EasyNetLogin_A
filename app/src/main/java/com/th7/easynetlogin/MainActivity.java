@@ -2,6 +2,9 @@ package com.th7.easynetlogin;
 
 
 import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -31,6 +34,15 @@ public class MainActivity extends Activity {
         passEdit.setText(pwd);
     }
 
+    private static boolean isWifi(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+        if (activeNetInfo != null && activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+            return true;
+        }
+        return false;
+    }
+
     public void OnClick(View view) {
         try {
             if (view.getId() == R.id.button) {
@@ -43,6 +55,10 @@ public class MainActivity extends Activity {
                 }
                 Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
             } else if (view.getId() == R.id.button2) {
+                if (!isWifi(this)) {
+                    Toast.makeText(this, "请连接至WiFi或关闭移动数据", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 try {
                     String ip = LoginUtils.getLocalIPAddress();
                     //Toast.makeText(this, ip, Toast.LENGTH_SHORT).show();
